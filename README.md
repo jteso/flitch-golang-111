@@ -1,2 +1,3 @@
-# Building binary for all platforms in parallel
-make release -j3
+# Golang Template for Flitch
+
+Please refer to documentation to get started with Golang template

@@ -20,33 +20,23 @@ type HelloResponse struct {
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
 	response := HelloResponse{
-		Message: "Hello",
+		Message: "Greetings from Golang running on Flitch!",
 	}
 	json.NewEncoder(w).Encode(response)
 	return
 }
 
 func main() {
-	httpAddr := fmt.Sprintf(":%s", getEnvOrFatal("FLITCH_AUTO_BINDING_PORT"))
-	healthAddr := fmt.Sprintf(":%s", getEnvOrFatal("FLITCH_HEALTH_PORT"))
+	httpAddr := fmt.Sprintf(":%s", getEnvOrFatal("FLITCH_AUTOBINDING_PORT"))
 
 	log.Println("Starting server...")
-	log.Printf("Health service listening on %s", healthAddr)
 	log.Printf("HTTP service listening on %s", httpAddr)
 
 	errChan := make(chan error, 10)
 
-	// Health endpoint
-	hmux := http.NewServeMux()
-	hmux.HandleFunc("/healthz", healthHandler)
-
-	go func() {
-		errChan <- http.ListenAndServe(healthAddr, hmux)
-	}()
-
 	// App endpoint
 	mux := http.NewServeMux()
-	mux.HandleFunc("/hello", helloHandler)
+	mux.HandleFunc("/", helloHandler)
 
 	go func() {
 		errChan <- http.ListenAndServe(httpAddr, mux)
